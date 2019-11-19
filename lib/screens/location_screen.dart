@@ -1,9 +1,9 @@
+import 'package:clima/screens/city_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
 import 'package:clima/services/weather.dart';
 
 class LocationScreen extends StatefulWidget {
-
   LocationScreen({@required this.locationWeather});
 
   final locationWeather;
@@ -17,7 +17,7 @@ class _LocationScreenState extends State<LocationScreen> {
   String city;
   String message;
   int temperature;
-  
+
   String weatherIcon;
 
   @override
@@ -38,11 +38,13 @@ class _LocationScreenState extends State<LocationScreen> {
       }
       var condition = weatherData['weather'][0]['id'];
       double temp = weatherData['main']['temp'];
-      
+
       weatherIcon = model.getWeatherIcon(condition);
       temperature = temp.toInt();
       message = model.getMessage(temperature);
       city = weatherData['name'];
+
+      print("WEATHER ICON: $weatherIcon");
     });
   }
 
@@ -69,7 +71,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 children: <Widget>[
                   FlatButton(
                     onPressed: () async {
-                      updateUI( await model.getLocationWeather());
+                      updateUI(await model.getLocationWeather());
                     },
                     child: Icon(
                       Icons.near_me,
@@ -77,7 +79,19 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      var typedName = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return CityScreen();
+                          },
+                        ),
+                      );
+                      if (typedName != null) {
+                        updateUI(await model.getCityWeather(typedName));
+                      }
+                    },
                     child: Icon(
                       Icons.location_city,
                       size: 50.0,
